@@ -63,3 +63,44 @@ function calcTotalPages(): void {
     }, 0n);
     console.log(r);
 }
+
+//Task 03.01
+//========================================
+
+function createCustomerID(name: string, id: number): string {
+    return `${id}/${name}`;
+}
+
+const myID: string = createCustomerID('Ann', 10);
+
+let idGenerator: typeof createCustomerID;
+idGenerator = (name: string, id: number) => `${id}/${name}`;
+
+//Task 03.02
+//=======================================
+
+function createCustomer(name: string, age?: number, city?: string): void {
+    console.log(`Customer name: ${name}`);
+
+    if (age) {
+        console.log(`Customer age: ${age}`);
+    }
+
+    if (city) {
+        console.log(`Customer city: ${city}`);
+    }
+}
+
+function getBookById(id: number): Book {
+    const books = getAllBooks();
+    return books.find(book => book.id === id);
+}
+
+function checkoutBooks(customer: string, ...bookIDs: number[]): string[] {
+    console.log(`Customer name ${customer}`);
+
+    return bookIDs
+        .map(id => getBookById(id))
+        .filter(el => el.available === true)
+        .map(el => el.title);
+}
