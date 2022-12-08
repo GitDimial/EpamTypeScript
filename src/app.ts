@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 showHello('greeting', 'TypeScript');
 
 function showHello(divName: string, name: string) {
@@ -29,13 +30,13 @@ function getAllBooks(): readonly Book[] {
 
 }
 
-function logFirstAvailable(books: readonly Book[]): void {
+function logFirstAvailable(books: readonly Book[] = getAllBooks()): void {
     console.log(`Number of books in the library ${books.length}`);
     const title = books.find(({ available }) => available)?.title;
     console.log(`First available book: ${title}`);
 }
 
-function getBookTitlesByCategory(inputCategory: Category): string[] {
+function getBookTitlesByCategory(inputCategory: Category = Category.JavaScript): string[] {
     const books = getAllBooks();
     return books
         .filter(book => book.category === inputCategory)
@@ -76,7 +77,7 @@ const myID: string = createCustomerID('Ann', 10);
 let idGenerator: typeof createCustomerID;
 idGenerator = (name: string, id: number) => `${id}/${name}`;
 
-//Task 03.02
+//Task 03.02 + 03.03 + 03.04
 //=======================================
 
 function createCustomer(name: string, age?: number, city?: string): void {
@@ -103,4 +104,40 @@ function checkoutBooks(customer: string, ...bookIDs: number[]): string[] {
         .map(id => getBookById(id))
         .filter(el => el.available === true)
         .map(el => el.title);
+}
+
+function getTitles(author: string): string[];
+function getTitles(available: boolean): string[];
+function getTitles(id: number, available: boolean): string[];
+function getTitles(...args: [string | boolean] | [number, boolean]): string[] {
+    const books = getAllBooks();
+
+    if (args.length === 1) {
+        const [arg] = args;
+        if (typeof arg === 'string') {
+            return books.filter(book => book.author === arg)
+                .map(book => book.title);
+        } else if (typeof arg === 'boolean') {
+            return books.filter(book => book.available === arg)
+                .map(book => book.title);
+        }
+
+    } else if (args.length === 2) {
+        const [id, available] = args;
+        if (typeof id === 'number' && typeof available === 'boolean') {
+            return books.filter(book => book.available === available && book.id === id)
+                .map(book => book.title);
+        }
+    }
+}
+
+function assertStringValue(data: any): asserts data is string {
+    if (typeof data !== 'string') {
+        throw new Error('Error maza, you are crazy');
+    }
+}
+
+function bookTitleTransform(title: any): string {
+    assertStringValue(title);
+    return [...title].reverse().join('');
 }
