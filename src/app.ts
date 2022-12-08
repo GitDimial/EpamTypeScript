@@ -11,12 +11,52 @@ function showHello(divName: string, name: string) {
 
 enum Category { HTML, CSS, JavaScript, Angular };
 
-type Book = {
+// type Book = {
+//     id: number,
+//     title: string,
+//     author: string,
+//     available: boolean,
+//     category: Category,
+// };
+
+type BookProperties = keyof Book;
+
+interface Book {
     id: number,
     title: string,
     author: string,
     available: boolean,
     category: Category,
+    pages?: number,
+    markDamaged?: DamageLogger
+};
+
+interface DamageLogger {
+    (reason: string): void
+}
+
+interface Person {
+    name: string,
+    email: string
+}
+
+interface Author extends Person {
+    numBooksPublished: number
+}
+
+interface Librarian extends Person {
+    department: string,
+    assistCustomer: (custName: string, bookTitle: string) => void
+}
+
+const myBook: Book = {
+    id: 5,
+    title: 'Colors, Backgrounds, and Gradients',
+    author: 'Eric A. Meyer',
+    available: true,
+    category: Category.CSS,
+    pages: 200,
+    markDamaged: (reason: string): void => console.log(`Damaged: ${reason}`)
 };
 
 function getAllBooks(): readonly Book[] {
@@ -92,7 +132,7 @@ function createCustomer(name: string, age?: number, city?: string): void {
     }
 }
 
-function getBookById(id: number): Book {
+function getBookById(id: Book['id']): Book | undefined {
     const books = getAllBooks();
     return books.find(book => book.id === id);
 }
@@ -141,3 +181,42 @@ function bookTitleTransform(title: any): string {
     assertStringValue(title);
     return [...title].reverse().join('');
 }
+
+// Task 04.01 - 04.05
+
+function printBook(book: Book): void {
+    console.log(`${book.title} by ${book.author}`);
+}
+const logDamage: DamageLogger = (reason: string): void => console.log(`Damaged: ${reason}`);
+
+const favoriteAuthor: Author = {
+    name: 'Dima',
+    email: 'example@example.com',
+    numBooksPublished: 5
+}
+
+const favoriteLibrarian: Librarian = {
+    name: 'Vitaliy',
+    email: 'ulala@example.com',
+    department: 'CatCo Department',
+    assistCustomer: null
+}
+
+function getProperty(book: Book, prop: BookProperties): any {
+    const value = book[prop];
+    return typeof value === 'function' ? value.name : value;
+}
+
+// console.log(getProperty(myBook, 'title'));
+// console.log(getProperty(myBook, 'markDamaged'));
+
+// const offer: any = {
+//     book: {
+//         title: 'Essential TypeScript',
+//     },
+// };
+
+// console.log(offer.magazine);
+// console.log(offer?.magazine?.getTitle());
+// console.log(offer.book?.getTitle());
+// console.log(offer.book?.authors?.[0]);
