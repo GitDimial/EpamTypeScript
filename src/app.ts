@@ -21,6 +21,9 @@ enum Category { HTML, CSS, JavaScript, Angular };
 
 type BookProperties = keyof Book;
 
+type PersonBook = Person & Book;
+type BookOrUndefined = Book | undefined;
+
 interface Book {
     id: number,
     title: string,
@@ -47,6 +50,11 @@ interface Author extends Person {
 interface Librarian extends Person {
     department: string,
     assistCustomer: (custName: string, bookTitle: string) => void
+}
+
+interface TOptions {
+    duration?: number,
+    speed?: number
 }
 
 const myBook: Book = {
@@ -132,7 +140,7 @@ function createCustomer(name: string, age?: number, city?: string): void {
     }
 }
 
-function getBookById(id: Book['id']): Book | undefined {
+function getBookById(id: Book['id']): BookOrUndefined {
     const books = getAllBooks();
     return books.find(book => book.id === id);
 }
@@ -189,18 +197,18 @@ function printBook(book: Book): void {
 }
 const logDamage: DamageLogger = (reason: string): void => console.log(`Damaged: ${reason}`);
 
-const favoriteAuthor: Author = {
-    name: 'Dima',
-    email: 'example@example.com',
-    numBooksPublished: 5
-}
+// const favoriteAuthor: Author = {
+//     name: 'Dima',
+//     email: 'example@example.com',
+//     numBooksPublished: 5
+// }
 
-const favoriteLibrarian: Librarian = {
-    name: 'Vitaliy',
-    email: 'ulala@example.com',
-    department: 'CatCo Department',
-    assistCustomer: null
-}
+// const favoriteLibrarian: Librarian = {
+//     name: 'Vitaliy',
+//     email: 'ulala@example.com',
+//     department: 'CatCo Department',
+//     assistCustomer: null
+// }
 
 function getProperty(book: Book, prop: BookProperties): any {
     const value = book[prop];
@@ -220,3 +228,100 @@ function getProperty(book: Book, prop: BookProperties): any {
 // console.log(offer?.magazine?.getTitle());
 // console.log(offer.book?.getTitle());
 // console.log(offer.book?.authors?.[0]);
+
+//Task 05.01 - 05.05
+abstract class ReferenceItem {
+    // title: string;
+    // year: number;
+
+    // constructor(newTitle: string, newYear: number) {
+    //     console.log('Creating a new ReferenceItem');
+    //     this.title = newTitle;
+    //     this.year = newYear;
+    // }
+    private _publisher: string;
+    #id: number;
+
+    static department: string = 'Odessa style depart.'
+
+    get publisher(): string {
+        return this._publisher?.toUpperCase();
+    }
+
+    set publisher(newPublisher: string) {
+        this._publisher = newPublisher;
+    }
+
+    constructor(
+        id: number,
+        public title: string,
+        protected year: number
+    ) {
+        console.log('Creating a new ReferenceItem');
+        this.#id = id;
+    }
+
+    printItem(): void {
+        console.log(`${this.title} was published in ${this.year}`);
+        console.log(ReferenceItem.department);
+    }
+    getId(): number {
+        return this.#id;
+    }
+
+    abstract printCitation(): void;
+}
+
+class Encyclopedia extends ReferenceItem {
+    constructor(
+        id: number,
+        title: string,
+        year: number,
+        public edition: number
+    ) {
+        super(id, title, year)
+    }
+
+    override printItem(): void {
+        super.printItem();
+        console.log(`Edition: ${this.edition} ${this.year}`)
+    }
+
+    printCitation(): void {
+        console.log(`${this.title} - ${this.year}`);
+    }
+}
+
+class UniversityLibrarian implements Librarian {
+    name: string;
+    email: string;
+    department: string;
+
+    assistCustomer(custName: string, bookTitle: string): void {
+        console.log(`${this.name} is assisting ${custName} with book ${bookTitle}`);
+    }
+}
+
+const refBook: Encyclopedia = new Encyclopedia(2, 'Javascript', 2022, 3);
+const favoriteLibrarian: Librarian = new UniversityLibrarian();
+favoriteLibrarian.name = 'Allan';
+favoriteLibrarian.assistCustomer('Borya', 'Learn Typescript');
+
+const personBook: PersonBook = {
+    name: 'Anna',
+    author: 'Anna',
+    available: false,
+    category: Category.Angular,
+    email: 'anna@mail.com',
+    id: 1,
+    title: 'unknown'
+}
+
+function setDefaultOptions(option: TOptions) {
+    option.duration ??= 100;
+    option.speed ??= 60;
+    return option
+}
+// const option1: TOptions = {};
+// const option2 = setDefaultOptions(option1);
+// console.log(option2);
