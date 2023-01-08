@@ -164,6 +164,11 @@ export function getProperty(book: Book, prop: BookProperties): any {
     return typeof value === 'function' ? value.name : value;
 }
 
+export function getObjectProperty<TObject, TKey extends keyof TObject>(obj: TObject, prop: TKey): TObject[TKey] | string {
+    const value = obj[prop];
+    return typeof value === 'function' ? value.name : value;
+}
+
 // console.log(getProperty(myBook, 'title'));
 // console.log(getProperty(myBook, 'markDamaged'));
 
@@ -177,3 +182,7 @@ export function getProperty(book: Book, prop: BookProperties): any {
 // console.log(offer?.magazine?.getTitle());
 // console.log(offer.book?.getTitle());
 // console.log(offer.book?.authors?.[0]);
+
+export function purge<T>(inventory: T[]): T[] {
+    return inventory.slice(2);
+}
